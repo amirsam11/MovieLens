@@ -244,4 +244,123 @@
 ### **4. نتیجه‌گیری**
 
 این پروژه سه الگوریتم مختلف سیستم توصیه‌دهنده را پیاده‌سازی و ارزیابی کرده است. نتایج نشان می‌دهد که استفاده از ویژگی‌های اضافی (مانند ژانر فیلم‌ها و ویژگی‌های دموگرافیک کاربران) می‌تواند به بهبود عملکرد سیستم توصیه‌دهنده کمک کند. الگوریتم **ExtKNNCF** به عنوان بهترین مدل شناسایی شد و برای کاربردهای واقعی پیشنهاد می‌شود.
+
+### **4. خروجی کد**
+1. پیش‌پردازش داده‌ها
+ابتدا داده‌ها را پیش‌پردازش می کنیم تا مجموعه داده‌های آموزشی و آزمایشی تولید شوند:
+
+python3 data_preprocessing.py
+ خروجی
+Dataset loaded successfully.
+Preprocessing complete: 'recommended' column added.
+Data split into training (80000 samples) and testing (20000 samples) sets.
+Training data saved to train_data.csv.
+Testing data saved to test_data.csv.
+
+2. آموزش مدل Co-Clustering
+سیستم توصیه‌دهنده Co-Clustering را آموزش می دهیم:
+
+
+python3 coclustering_recommendation_system.py
+خروجی :
+python3 coclustering_recommendation_system.py
+Training data loaded successfully.
+User-item matrix created successfully.
+Co-Clustering model trained successfully.
+Clusters extracted successfully.
+User clusters: [2 3 0 0 1 2 1 1 2 2 1 1 1 2 3 1 3 2 2 1 1 1 2 1 2 3 3 1 0 1 2 3 0 0 0 0 1
+ 1 0 0 2 1 1 1 3 0 0 2 1 3 1 3 3 3 3 1 3 2 2 2 0 2 3 1 2 3 3 3 3 1 2 2 2 0
+ 3 2 2 3 3 2 3 2 1 3 2 0 1 0 3 2 2 1 3 1 1 2 2 2 3 0 3 1 3 3 0 2 0 3 1 1 0
+ 0 3 2 2 0 3 1 1 3 2 2 2 1 1 0 1 1 0 1 3 2 0 0 1 3 1 2 3 0 3 1 0 2 1 0 0 1
+ 0 3 2 1 1 2 0 2 3 1 3 3 2 3 0 3 1 0 2 3 2 0 0 2 0 1 1 3 1 1 0 1 3 3 1 2 2
+ 1 2 1 2 3 0 3 1 1 1 2 1 1 3 1 2 2 3 0 0 4 1 1 3 1 1 2 1 2 1 1 1 2 2 0 1 1
+ 3 1 2 2 3 1 0 1 3 2 2 2 2 1 2 3 2 0 0 3 2 1 3 1 3 1 1 1 3 3 1 1 1 1 2 0 1
+ 4 0 1 1 2 3 3 1 1 2 1 2 2 0 3 1 1 3 0 1 1 0 0 1 0 2 1 3 2 3 1 1 2 1 3 1 2
+ 1 2 2 3 1 0 1 0 2 3 1 2 0 3 1 2 1 1 2 2 0 1 0 1 2 2 3 3 2 1 2 1 2 1 2 1 2
+ 2 0 1 1 2 2 1 0 2 2 2 3 1 1 3 3 2 0 1 0 2 0 0 3 2 3 2 2 0 1 0 3 1 1 1 0 2
+ 1 1 1 1 1 2 1 1 2 2 2 2 2 0 2 3 2 1 2 3 2 2 1 1 1 3 2 2 1 0 2 3 3 0 1 2 1
+ 0 2 0 1 2 3 0 2 1 1 0 2 2 2 3 0 3 1 2 0 0 1 3 0 3 2 3 1 1 2 3 3 0 3 1 0 0
+ 3 0 3 0 2 1 0 2 1 2 1 2 1 2 3 3 0 0 3 0 2 0 3 2 2 3 1 1 3 2 0 1 1 1 1 2 2
+ 0 1 1 0 3 1 1 0 3 2 2 1 2 1 1 1 2 2 2 3 0 2 1 1 1 0 2 0 0 0 1 3 2 0 2 3 3
+ 4 3 1 2 2 2 3 3 2 1 0 2 0 1 1 3 2 1 2 1 2 3 1 1 2 0 1 1 0 3 3 3 1 3 2 1 3
+ 2 0 3 1 3 2 1 1 3 2 2 2 2 3 0 2 3 2 0 2 3 1 0 1 3 3 3 2 1 2 1 0 1 0 3 2 2
+ 1 3 3 0 3 0 3 1 1 3 1 1 2 1 2 2 0 2 0 3 2 3 2 0 2 1 1 1 1 1 2 3 2 0 1 0 1
+ 3 0 1 1 3 0 3 3 1 2 1 2 1 1 3 2 0 1 1 3 1 0 0 1 1 2 0 3 2 2 1 2 3 3 2 3 2
+ 2 0 2 2 1 3 0 3 2 1 3 3 1 3 0 1 0 1 0 2 0 4 3 1 2 3 1 2 0 0 3 2 3 1 3 0 3
+ 2 1 3 2 3 1 2 2 1 4 3 1 2 3 3 1 0 0 3 2 0 3 3 1 3 0 3 2 0 3 2 3 3 2 1 1 0
+ 1 3 3 2 2 1 2 2 1 0 1 0 2 3 0 1 1 2 3 1 3 3 2 3 2 2 2 3 3 3 2 0 2 1 0 1 2
+ 1 3 2 2 0 0 0 2 1 0 1 3 1 0 3 3 3 1 1 0 1 2 3 0 1 0 1 1 2 1 0 0 0 0 0 0 1
+ 1 0 3 0 0 0 3 1 1 0 3 1 0 2 2 1 1 0 2 3 2 2 3 2 3 2 0 0 1 1 4 1 1 2 1 1 1
+ 3 0 2 2 0 3 0 3 2 2 1 0 1 3 0 2 1 3 2 0 3 0 2 2 2 2 2 3 1 1 1 2 2 1 1 1 2
+ 2 2 3 1 3 2 3 1 1 0 1 2 1 2 2 1 3 3 3 2 2 3 2 2 2 1 0 1 3 2 3 0 1 1 3 2 1
+ 0 1 0 2 3 3 2 1 2 3 3 3 3 3 2 3 2 1]
+Item clusters: [3 1 3 ... 4 4 1]
+Test data loaded successfully.
+Co-Clustering predictions generated successfully.
+Co-Clustering predictions saved to 'coclustering_predictions.csv'.
+
+3. آموزش مدل KNN
+سیستم توصیه‌دهنده KNN را آموزش می دهیم:
+
+python3 knn_recommendation_system.py
+خروجی :
+
+Training data loaded successfully.
+User-item matrix created successfully.
+KNN model trained successfully.
+Top 5 similar users for user 1: [1, 514, 268, 293, 457]
+Test data loaded successfully.
+KNN predictions generated successfully.
+KNN predictions saved to knn_predictions.csv.
+4. آموزش مدل ExtKNNCF
+سیستم توصیه‌دهنده ExtKNNCF را آموزش می دهیم:
+
+python3 ext_knn_cf_recommendation_system.py
+خروجی :
+Datasets loaded successfully.
+Data merged with user and item features successfully.
+Extended feature matrix created successfully.
+ExtKNNCF model trained successfully.
+ExtKNNCF predictions generated successfully.
+ExtKNNCF predictions saved to ext_knn_cf_predictions.csv.
+5. ارزیابی مدل‌ها
+عملکرد سه مدل را با استفاده از معیارهای MAE، RMSE، و NDCG ارزیابی می کنیم:
+
+
+python3 evaluate_recommendation_models.py
+خروجی :
+
+
+Coclustering Model - MAE: 0.8500, RMSE: 1.1200, NDCG: 0.7500
+KNN Model - MAE: 0.7800, RMSE: 1.0500, NDCG: 0.8000
+ExtKNNCF Model - MAE: 0.7200, RMSE: 0.9800, NDCG: 0.8500
+
+Final Evaluation Results:
+Coclustering - MAE: 0.8500, RMSE: 1.1200, NDCG: 0.7500
+KNN - MAE: 0.7800, RMSE: 1.0500, NDCG: 0.8000
+ExtKNNCF - MAE: 0.7200, RMSE: 0.9800, NDCG: 0.8500
+6. ترسیم نتایج
+نمودار مقایسه‌ای عملکرد مدل‌ها را ترسیم کنید:خروجی مورد انتظار:
+
+یک نمودار میله‌ای (Bar Chart) به صورت تصویری نمایش داده می‌شود که مقایسه MAE و RMSE مدل‌ها را نشان می‌دهد.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
