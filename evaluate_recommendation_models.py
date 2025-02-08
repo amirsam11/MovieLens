@@ -1,96 +1,75 @@
 # evaluate_recommendation_models.py
 
-import pandas as pd
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 import numpy as np
+import pandas as pd
 
-# Load test data
-try:
-    test_data = pd.read_csv('test_data.csv')
-    actual_ratings = test_data['rating'].values  # True ratings from the test set
-    print("Test data loaded successfully.")
-except FileNotFoundError as e:
-    print(f"Error: File not found. Please ensure 'test_data.csv' exists. {e}")
-    exit()
-except Exception as e:
-    print(f"An error occurred while loading the test data: {e}")
-    exit()
-
-# Function to calculate MAE and RMSE
-def calculate_metrics(actual_ratings, predictions):
+def calculate_ndcg(actual, predicted, k=5):
     """
-    Calculate MAE and RMSE for the given predictions and actual ratings.
+    Calculate Normalized Discounted Cumulative Gain (NDCG) for top-k recommendations.
     
     Parameters:
-        actual_ratings (list or np.array): List of actual ratings.
-        predictions (list or np.array): List of predicted ratings.
+        actual (list): List of actual ratings.
+        predicted (list): List of predicted ratings.
+        k (int): Number of top recommendations to consider.
     
     Returns:
-        tuple: MAE and RMSE values.
+        float: NDCG score.
     """
-    if len(actual_ratings) != len(predictions):
-        print("Error: Length of actual ratings and predictions do not match.")
-        return None, None
+    dcg = 0
+    idcg = 0
+    sorted_actual = sorted(actual, reverse=True)[:k]
     
+    for i, (a, p) in enumerate(zip(actual, predicted)):
+        if i < k:
+            dcg += (2 ** a - 1) / np.log2(i + 2)
+            idcg += (2 ** sorted_actual[i] - 1) / np.log2(i + 2)
+    
+    return dcg / idcg if idcg != 0 else 0
+
+def evaluate_model(model_name, actual_ratings, predictions):
+    """
+    Evaluate a model using MAE, RMSE, and NDCG metrics.
+    
+    Parameters:
+        model_name (str): Name of the model.
+        actual_ratings (list): List of actual ratings.
+        predictions (list): List of predicted ratings.
+    
+    Returns:
+        dict: Evaluation results for the model.
+    """
     mae = mean_absolute_error(actual_ratings, predictions)
-    rmse = mean_squared_error(actual_ratings, predictions, squared=False)
-    return mae, rmse
-
-# Evaluate Co-Clustering Model
-def evaluate_coclustering():
-    """
-    Evaluate the Co-Clustering model by loading its predictions and calculating MAE and RMSE.
-    """
-    try:
-        coclustering_predictions = pd.read_csv('coclustering_predictions.csv')['prediction'].values
-        mae, rmse = calculate_metrics(actual_ratings, coclustering_predictions)
-        if mae is not None and rmse is not None:
-            print(f"Co-Clustering Model - MAE: {mae:.4f}, RMSE: {rmse:.4f}")
-    except FileNotFoundError:
-        print("Error: 'coclustering_predictions.csv' not found. Please ensure it exists.")
-    except Exception as e:
-        print(f"An error occurred while evaluating Co-Clustering model: {e}")
-
-# Evaluate KNN Model
-def evaluate_knn():
-    """
-    Evaluate the KNN model by loading its predictions and calculating MAE and RMSE.
-    """
-    try:
-        knn_predictions = pd.read_csv('knn_predictions.csv')['prediction'].values
-        mae, rmse = calculate_metrics(actual_ratings, knn_predictions)
-        if mae is not None and rmse is not None:
-            print(f"KNN Model - MAE: {mae:.4f}, RMSE: {rmse:.4f}")
-    except FileNotFoundError:
-        print("Error: 'knn_predictions.csv' not found. Please ensure it exists.")
-    except Exception as e:
-        print(f"An error occurred while evaluating KNN model: {e}")
-
-# Evaluate ExtKNNCF Model
-def evaluate_ext_knn_cf():
-    """
-    Evaluate the ExtKNNCF model by loading its predictions and calculating MAE and RMSE.
-    """
-    try:
-        ext_knn_cf_predictions = pd.read_csv('ext_knn_cf_predictions.csv')['prediction'].values
-        mae, rmse = calculate_metrics(actual_ratings, ext_knn_cf_predictions)
-        if mae is not None and rmse is not None:
-            print(f"ExtKNNCF Model - MAE: {mae:.4f}, RMSE: {rmse:.4f}")
-    except FileNotFoundError:
-        print("Error: 'ext_knn_cf_predictions.csv' not found. Please ensure it exists.")
-    except Exception as e:
-        print(f"An error occurred while evaluating ExtKNNCF model: {e}")
+    mse = mean_squared_error(actual_ratings, predictions)
+    rmse = np.sqrt(mse)
+    ndcg = calculate_ndcg(actual_ratings, predictions)
+    
+    print(f"{model_name.capitalize()} Model - MAE: {mae:.4f}, RMSE: {rmse:.4f}, NDCG: {ndcg:.4f}")
+    return {model_name: {'MAE': mae, 'RMSE': rmse, 'NDCG': ndcg}}
 
 if __name__ == "__main__":
-    print("Starting evaluation of recommendation models...")
-    
-    # Evaluate Co-Clustering Model
-    evaluate_coclustering()
-    
-    # Evaluate KNN Model
-    evaluate_knn()
-    
-    # Evaluate ExtKNNCF Model
-    evaluate_ext_knn_cf()
-    
-    print("Evaluation completed.")
+    models = ['coclustering', 'knn', 'ext_knn_cf']
+    results = {}
+
+    for model in models:
+        try:
+            # Load test data
+            test_data = pd.read_csv('test_data.csv')
+            actual_ratings = test_data['rating'].values
+            
+            # Load predictions
+            predictions_file = f"{model}_predictions.csv"
+            predictions = pd.read_csv(predictions_file)['prediction'].values
+            
+            # Evaluate the model
+            model_results = evaluate_model(model, actual_ratings, predictions)
+            results.update(model_results)
+        except FileNotFoundError as e:
+            print(f"Error: File not found for {model}. {e}")
+        except Exception as e:
+            print(f"An error occurred while evaluating {model}: {e}")
+
+    # Print final results
+    print("\nFinal Evaluation Results:")
+    for model, metrics in results.items():
+        print(f"{model.capitalize()} - MAE: {metrics['MAE']:.4f}, RMSE: {metrics['RMSE']:.4f}, NDCG: {metrics['NDCG']:.4f}")
